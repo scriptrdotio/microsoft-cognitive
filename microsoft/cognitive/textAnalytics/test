@@ -1,0 +1,53 @@
+var config = require("./config");
+var TextAnalyticsManager = require("./TextAnalyticsManager");
+var tam = new TextAnalyticsManager.TextAnalyticsManager(config);
+var params = {
+  "documents":[
+    {"id":"string",
+     "language":"en",
+     "text":"amazing review thanks a lot."
+    },
+    {
+     "id":"string1",
+     "language":"en",
+     "text":"worst reply ever"
+    }
+  ]
+}
+return tam.sentiment(params);
+var detectParams = {
+  "documents": [
+    {
+      "id": "string1",
+      "text": "welcome"
+    },
+    {
+      "id":"string2",
+      "text":"bonjour"
+    },
+    {
+      "id":"string3",
+      "text":"sabah al kheir"
+    },
+    {
+      "id":"string4",
+      "text":"كيف"
+    }
+  ]
+}
+return tam.detectLanguages(detectParams);
+
+var params = {
+  "documents":[
+    {"id":"string",
+     "language":"en",
+     "text":"amazing review thanks a lot."
+    },
+    {
+     "id":"string1",
+     "language":"en",
+     "text":"worst reply ever"
+    }
+  ]
+}
+return tam.keyPhrases(params);

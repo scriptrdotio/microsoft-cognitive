@@ -1,0 +1,7 @@
+var config = require("./config");
+var emotionManager = require("./emotion");
+var em = new emotionManager.Emotion(config);
+var params = {
+	url:"http://media.gettyimages.com/videos/close-up-sad-face-of-homeless-black-man-looking-at-camera-talking-video-id348-15?s=640x640"
+}
+return em.emotionRecognition(params);

@@ -1,0 +1,85 @@
+var cfg = require("./config");
+var http = require("http");
+/**
+*The Text Analytics API is a suite of text analytics web services built with Azure Machine Learning. The API can be used to analyze unstructured text for tasks such *as sentiment analysis, key phrase extraction and language detection.
+**/
+function TextAnalyticsManager (config){
+  this.config = config?config:cfg;
+}
+
+/**
+*The API returns a numeric score between 0 and 1. Scores close to 1 indicate positive sentiment, while scores close to 0 indicate negative sentiment. Sentiment score is generated using classification techniques. The input features to the classifier include n-grams, features generated from part-of-speech tags, and word embeddings. Currently, the following languages are supported: English, Spanish, French, Portuguese.
+*@Params :{"documents": [
+    {
+      "language": ("en","fr","es","pt"),
+      "id": "string",
+      "text": "string."
+    }
+  ]}
+**/
+TextAnalyticsManager.prototype.sentiment = function(params){
+  var requestParams = {
+    "url":"https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment",
+    "method":"POST",
+    "headers":{"Content-Type":"application/json","Ocp-Apim-Subscription-Key":this.config.subscriptionKey},
+    "bodyString":JSON.stringify(params)
+  }
+  var response = http.request(requestParams);
+  //return response;
+  if(response.status == "200"){
+    	var responseBody = JSON.parse(response.body);
+    	if(responseBody.errors.length ==0){
+          for(var i =0;i<responseBody.documents.length;i++){
+            responseBody.documents[i].recognition = responseBody.documents[i].score>0 && responseBody.documents[i].score<0.45?"negative": responseBody.documents[i].score>=0.45 && responseBody.documents[i].score<0.55?"neutral" : responseBody.documents[i].score>=0.55 && responseBody.documents[i].score<=1?"positive":"unkown";
+          }
+        }
+    	response.body = responseBody
+  }
+            return response;
+}
+/**
+*The API returns a list of strings denoting the key talking points in the input text. We employ techniques from Microsoft Office's sophisticated Natural Language Processing toolkit. Currently, the following languages are supported: English, German, Spanish and Japanese.
+*@Params :{"documents": [
+    {
+      "language": ("en","fr","es","pt"),
+      "id": "string",
+      "text": "string."
+    }
+  ]}
+**/
+TextAnalyticsManager.prototype.keyPhrases = function(params){
+  var requestParams = {
+    "url":"https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+    "method":"POST",
+    "headers":{"Content-Type":"application/json","Ocp-Apim-Subscription-Key":this.config.subscriptionKey},
+    "bodyString":JSON.stringify(params)
+  }
+  var response = http.request(requestParams);
+  //return response;
+  if(response.status == "200"){
+    	response.body = JSON.parse(response.body);
+  }
+  return response;
+}
+/**
+*The API returns the detected language and a numeric score between 0 and 1. Scores close to 1 indicate 100% certainty that the identified language is true. A total of 120 languages are supported.
+*@Params :{"documents": [
+    {
+      "id": "string",
+      "text": "string."
+    }
+  ]}
+**/
+TextAnalyticsManager.prototype.detectLanguages = function(params){
+  var requestParams = {
+    "url":"https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/languages",
+    "method":"POST",
+    "headers":{"Content-Type":"application/json","Ocp-Apim-Subscription-Key":this.config.subscriptionKey,"numberOfLanguagesToDetect":"1"},
+    "bodyString":JSON.stringify(params)
+  }
+  var response = http.request(requestParams);
+  if(response.status == "200"){
+    	response.body = JSON.parse(response.body);
+  }
+  return response;
+}
